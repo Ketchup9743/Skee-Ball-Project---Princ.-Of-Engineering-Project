@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skee-Ball Scoreboard</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main>
+    <p class="eyebrow">SKEE-BALL / LIVE BOARD</p>
+    <h1>Scoreboard</h1>
+    <section class="total"><span>Total score</span><strong id="score">0</strong></section>
+    <section class="sensors">
+      <div class="sensor">Sensor 1<strong id="sensor-1">0</strong>points</div>
+      <div class="sensor">Sensor 2<strong id="sensor-2">0</strong>points</div>
+      <div class="sensor">Sensor 3<strong id="sensor-3">0</strong>points</div>
+    </section>
+    <button id="reset">Reset scoreboard</button>
+  </main>
+  <script>
+    async function updateScore() {
+      const response = await fetch('/api/score');
+      const data = await response.json();
+      document.querySelector('#score').textContent = data.score;
+      for (const sensor of ['1', '2', '3']) {
+        document.querySelector('#sensor-' + sensor).textContent = data.sensor_scores[sensor];
+      }
+    }
+    document.querySelector('#reset').addEventListener('click', async () => {
+      await fetch('/api/reset', { method: 'POST' });
+      await updateScore();
+    });
+    updateScore();
+    setInterval(updateScore, 500);
+  </script>
+</body>
+</html>
